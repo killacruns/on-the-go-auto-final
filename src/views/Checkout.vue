@@ -69,6 +69,8 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useCartStore } from '@/store/cart'
+import { db } from '@/firebaseConfig'
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 
 const cart = useCartStore()
 const currentStep = ref(1)
@@ -112,12 +114,31 @@ function validateForm() {
   return valid
 }
 
-function placeOrder() {
+async function placeOrder() {
   if (!validateForm()) return
-  // Simulate order processing...
-  orderPlaced.value = true
-  // Clear the cart and reset form
-  cart.items = []
-  shippingInfo.value = { name: '', address: '', email: '' }
+
+  try {
+    // Create an order object with a server timestamp and a default status
+    const orderData = {
+      shippingInfo: shippingInfo.value,
+      items: cart.items,
+      total: total.value,
+      createdAt: serverTimestamp(),
+      status: 'Processing'
+      // Optionally, add userId from Firebase Auth here if available
+    }
+
+    // Add the order to the "orders" collection in Firestore
+    await addDoc(collection(db, 'orders'), orderData)
+
+    // Update UI on success
+    orderPlaced.value = true
+    // Clear the cart and reset the form
+    cart.items = []
+    shippingInfo.value = { name: '', address: '', email: '' }
+  } catch (error) {
+    console.error("Error placing order:", error)
+    // Optionally, display an error notification to the user here
+  }
 }
 </script>
