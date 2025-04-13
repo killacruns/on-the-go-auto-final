@@ -1998,7 +1998,8 @@ h1, h2, h3, h4 {
   color: #777;
   margin-top: 2rem;
 }
-</style>
+<style scoped>
+<style scoped>
 .user-profile {
   max-width: 1000px;
   margin: 0 auto;
@@ -2042,9 +2043,15 @@ h1, h2, h3, h4 {
   padding: 1rem;
   border-radius: 0.5rem;
   margin-bottom: 1rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
-<style scoped>
+
+.order-item p {
+  margin: 0.25rem 0;
+  font-size: 0.95rem;
+  color: #374151;
+}
+</style>
 .navbar {
   position: fixed;
   top: 0;

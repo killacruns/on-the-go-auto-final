@@ -62,7 +62,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useCartStore } from '@/store/cart'
-import { useWishlist } from '@/composables/useWishlist'  // Import the wishlist composable
+import { useWishlist } from '@/composables/useWishlist'  
 
 // Import images
 import brakes from '@/assets/images/brakes.jpg'
@@ -81,12 +81,12 @@ import clutchKit from '@/assets/images/clutch_kit.jpg'
 import acFilter from '@/assets/images/ac_filter.jpg'
 
 const cart = useCartStore()
-const { wishlist, toggleWishlistItem, isInWishlist: checkWishlist } = useWishlist() // Use global wishlist functions
+const { wishlist, toggleWishlistItem, isInWishlist: checkWishlist } = useWishlist() 
 
 const searchQuery = ref('')
 const sortOption = ref('default')
 
-// Sample spare parts data with 14 items
+
 const parts = ref([
   {
     id: 1,
@@ -188,7 +188,7 @@ const parts = ref([
   }
 ])
 
-// Filter parts based on search query
+
 const filteredParts = computed(() => {
   if (!searchQuery.value) return parts.value
   return parts.value.filter((part) =>
@@ -196,7 +196,7 @@ const filteredParts = computed(() => {
   )
 })
 
-// Sort filtered parts based on selected sort option
+
 const sortedFilteredParts = computed(() => {
   let sorted = [...filteredParts.value]
   if (sortOption.value === 'priceAsc') {
@@ -229,9 +229,8 @@ function addToCart(part) {
   }, 2000)
 }
 
-// Wishlist functions using global composable
 function toggleWishlist(part) {
-  // Ensure the part object includes a type property, e.g., 'spare'
+
   toggleWishlistItem({ ...part, type: 'spare' })
 }
 

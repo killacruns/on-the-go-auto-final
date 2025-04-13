@@ -55,6 +55,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import { setDoc, doc, serverTimestamp } from 'firebase/firestore'
+import { db } from '@/firebaseConfig'
 
 const name = ref('')
 const phone = ref('')
@@ -65,7 +67,7 @@ const errorMessage = ref('')
 const router = useRouter()
 
 async function register() {
-  // Basic validation
+  // Basic validation: check if passwords match
   if (password.value !== confirmPassword.value) {
     errorMessage.value = 'Passwords do not match'
     return
@@ -73,14 +75,21 @@ async function register() {
 
   try {
     const auth = getAuth()
-    // Create the user
+    // Create the user with email and password
     const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value)
 
-    // Optionally update the user's displayName in Firebase
+    // Update the user's display name in Firebase Auth
     await updateProfile(userCredential.user, {
       displayName: name.value
     })
 
+    // Create a user document in Firestore with additional data
+    await setDoc(doc(db, "users", userCredential.user.uid), {
+      displayName: name.value,
+      email: email.value,
+      phone: phone.value || "",
+      createdAt: serverTimestamp()
+    })
 
     // Redirect to home or profile after successful signup
     router.push('/')

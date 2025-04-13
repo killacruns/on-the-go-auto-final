@@ -69,8 +69,8 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useCartStore } from '@/store/cart'
-import { db } from '@/firebaseConfig'
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { db, auth } from '@/firebaseConfig'
+import { collection, addDoc, serverTimestamp, doc, updateDoc, increment } from 'firebase/firestore'
 
 const cart = useCartStore()
 const currentStep = ref(1)
@@ -114,26 +114,47 @@ function validateForm() {
   return valid
 }
 
+// Function to update inventory for each ordered item
+async function updateInventoryForOrder(items) {
+  for (const item of items) {
+    try {
+      // Assume the inventory document ID is "spare-{item.id}"
+      const inventoryRef = doc(db, 'inventory', `spare-${item.id}`)
+      // Decrement stock by the quantity ordered
+      await updateDoc(inventoryRef, { stock: increment(-item.quantity) })
+    } catch (error) {
+      console.error(`Error updating inventory for item ${item.id}:`, error)
+    }
+  }
+}
+
 async function placeOrder() {
   if (!validateForm()) return
 
   try {
-    // Create an order object with a server timestamp and a default status
+    // Retrieve the current user's UID
+    const currentUser = auth.currentUser
+    const userId = currentUser ? currentUser.uid : null
+
+    // Create an order object with shipping info, items, total, and a timestamp
     const orderData = {
+      userId, // Include the user's UID so we can query orders later
       shippingInfo: shippingInfo.value,
       items: cart.items,
       total: total.value,
       createdAt: serverTimestamp(),
       status: 'Processing'
-      // Optionally, add userId from Firebase Auth here if available
     }
 
-    // Add the order to the "orders" collection in Firestore
+    // Add the order to Firestore
     await addDoc(collection(db, 'orders'), orderData)
+
+    // Update inventory for each ordered item
+    await updateInventoryForOrder(cart.items)
 
     // Update UI on success
     orderPlaced.value = true
-    // Clear the cart and reset the form
+    // Clear the cart and reset shipping info
     cart.items = []
     shippingInfo.value = { name: '', address: '', email: '' }
   } catch (error) {

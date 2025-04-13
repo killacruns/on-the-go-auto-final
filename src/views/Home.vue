@@ -1,6 +1,6 @@
 <template>
   <div class="home-page">
-    <!-- HERO / JUMBOTRON -->
+    
     <section class="hero-section">
       <img src="/src/assets/images/On_The_Go_logo2.png" alt="Logo Background" class="hero-background" />
       <div class="hero-overlay"></div>
@@ -17,7 +17,7 @@
       </div>
     </section>
 
-    <!-- WHY CHOOSE US -->
+    
     <section class="why-choose-us">
       <h2>Why Choose Us?</h2>
       <div class="features-container">
@@ -27,7 +27,7 @@
           <p>{{ feature.text }}</p>
         </div>
       </div>
-      <!-- Additional information about the project -->
+      
       <div class="about-project">
         <h3>About OnTheGo Auto</h3>
         <p>
@@ -40,7 +40,7 @@
       </div>
     </section>
 
-    <!-- FEATURED SPARE PARTS -->
+    
     <section class="spare-parts">
       <h2>Featured Spare Parts</h2>
       <p class="featured-info">
@@ -59,7 +59,7 @@
       </div>
     </section>
 
-    <!-- FAQ Toggle Component (Fixed in the corner) -->
+    
     <FAQToggle />
   </div>
 </template>
